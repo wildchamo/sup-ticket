@@ -1,0 +1,7 @@
+.ticketStatusGreen { color: greenyellow }
+
+.authorAndDate { color: var(--secondary) }
+.authorAndDate strong { color: var(--contrast) }
+
+.ticketDetails { border: 1px solid #3c5c60 }
+.ticketDetails > header { border-bottom: 1px solid #244538}
