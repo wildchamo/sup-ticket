@@ -5,9 +5,5 @@ export default async function Home() {
 
   const buckets = await supabase.storage.listBuckets();
 
-  return (
-    <main className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      {JSON.stringify(buckets, null, 2)}
-    </main>
-  );
+  return <main className="container">{JSON.stringify(buckets, null, 2)}</main>;
 }
