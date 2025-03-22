@@ -1,18 +1,47 @@
+"use client";
+
 import Link from "next/link";
+import { useRef } from "react";
 export const Login = ({ isPasswordLogin }) => {
+  const emailInputRef = useRef(null);
+  const passwordInputRef = useRef(null);
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const email = emailInputRef.current.value;
+    const password = passwordInputRef.current?.value;
+
+    if (isPasswordLogin) {
+      alert("Logging in with email and password:", { email, password });
+    } else {
+      console.log("Logging in with magic link:", { email });
+    }
+  };
+
   return (
-    <form>
+    <form onSubmit={onSubmit}>
       <article style={{ maxWidth: "480px", margin: "auto" }}>
         <header>Login</header>
         <fieldset>
           <label htmlFor="email">
             Email
-            <input type="email" id="email" name="email" required />
+            <input
+              ref={emailInputRef}
+              type="email"
+              id="email"
+              name="email"
+              required
+            />
           </label>
           {isPasswordLogin && (
             <label htmlFor="password">
               Password
-              <input type="password" id="password" name="password" />
+              <input
+                ref={passwordInputRef}
+                type="password"
+                id="password"
+                name="password"
+              />
             </label>
           )}
         </fieldset>
