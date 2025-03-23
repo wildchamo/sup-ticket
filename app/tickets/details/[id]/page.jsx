@@ -1,5 +1,5 @@
 import classes from "./styles.module.css";
-
+import { TicketComments } from "./TicketCommets";
 export default function TicketDetailsPage({ params }) {
   return (
     <article className={classes.ticketDetails}>
@@ -14,6 +14,8 @@ export default function TicketDetailsPage({ params }) {
         <h2>Ticket title should be here</h2>
       </header>
       <section>Some details about the ticket should be here.</section>
+
+      <TicketComments />
     </article>
   );
 }
