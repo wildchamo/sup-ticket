@@ -49,7 +49,7 @@ export const Login = ({ isPasswordLogin }) => {
           {isPasswordLogin ? (
             <Link
               href={{
-                pathname: "/login",
+                pathname: "/",
                 query: { magicLink: "yes" },
               }}
             >
@@ -58,7 +58,7 @@ export const Login = ({ isPasswordLogin }) => {
           ) : (
             <Link
               href={{
-                pathname: "/login",
+                pathname: "/",
                 query: { magicLink: "no" },
               }}
             >

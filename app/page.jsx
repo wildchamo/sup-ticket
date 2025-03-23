@@ -1,6 +1,8 @@
 import { Login } from "./Login";
 
-export default function LoginPage({ searchParams }) {
-  const wantsMagicLink = searchParams.magicLink === "yes";
+export default async function LoginPage({ searchParams }) {
+  const { magicLink } = await searchParams;
+
+  const wantsMagicLink = magicLink === "yes";
   return <Login isPasswordLogin={!wantsMagicLink} />;
 }
