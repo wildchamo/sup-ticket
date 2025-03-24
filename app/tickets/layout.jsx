@@ -5,7 +5,7 @@ export default function TicketsLayout(pageProps) {
   return (
     <main className="container">
       <section style={{ borderBottom: "1px solid gray" }}>
-        <TenantName></TenantName>
+        <TenantName tenantName="SupTicket"></TenantName>
         <Nav></Nav>
       </section>
       <section>{pageProps.children}</section>
