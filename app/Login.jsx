@@ -1,8 +1,13 @@
 "use client";
 
+import { createSupabaseBrowserClient } from "@/supabase-utils/browser-client";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
+
 export const Login = ({ isPasswordLogin }) => {
+  const router = useRouter();
+
   const emailInputRef = useRef(null);
   const passwordInputRef = useRef(null);
 
@@ -11,8 +16,21 @@ export const Login = ({ isPasswordLogin }) => {
     const email = emailInputRef.current.value;
     const password = passwordInputRef.current?.value;
 
+    const supabase = createSupabaseBrowserClient();
+
     if (isPasswordLogin) {
-      alert("Logging in with email and password:", { email, password });
+      supabase.auth
+        .signInWithPassword({
+          email,
+          password,
+        })
+        .then((result) => {
+          if (result.data?.user) {
+            router.push("/tickets");
+          } else {
+            alert("Login failed");
+          }
+        });
     } else {
       console.log("Logging in with magic link:", { email });
     }
