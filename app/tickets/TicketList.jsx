@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 export function TicketList({ tickets }) {
-  console.log("tickets", tickets);
   return (
     <table>
       <thead>

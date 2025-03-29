@@ -3,7 +3,7 @@
 import { createSupabaseBrowserClient } from "@/supabase-utils/browser-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 export const Login = ({ isPasswordLogin }) => {
   const router = useRouter();
@@ -37,7 +37,7 @@ export const Login = ({ isPasswordLogin }) => {
   };
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} action={"/auth/pw-login"} method="POST">
       <article style={{ maxWidth: "480px", margin: "auto" }}>
         <header>Login</header>
         <fieldset>
