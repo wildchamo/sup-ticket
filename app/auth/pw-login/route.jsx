@@ -21,7 +21,7 @@ export async function POST(request) {
     return NextResponse.redirect(
       new URL("/error?type=login-failed", request.url),
       {
-        status: 401,
+        status: 302,
       }
     );
   }
