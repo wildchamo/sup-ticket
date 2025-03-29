@@ -7,7 +7,9 @@ export async function POST(request) {
   const email = formData.get("email");
   const password = formData.get("password");
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
+
+  console.log(supabase);
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -16,9 +18,12 @@ export async function POST(request) {
 
   const userData = data?.user;
   if (error || !userData) {
-    return NextResponse.redirect(new URL("/error?type=login-failed"), {
-      status: 401,
-    });
+    return NextResponse.redirect(
+      new URL("/error?type=login-failed", request.url),
+      {
+        status: 401,
+      }
+    );
   }
 
   return NextResponse.redirect(new URL("/tickets", request.url), {
