@@ -26,9 +26,7 @@ export const Login = ({ isPasswordLogin }) => {
           password,
         })
         .then((result) => {
-          if (result.data?.user) {
-            router.push("/tickets");
-          } else {
+          if (!result.data?.user) {
             alert("Login failed");
           }
         });
