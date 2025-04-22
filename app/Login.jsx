@@ -3,7 +3,7 @@
 import { createSupabaseBrowserClient } from "@/supabase-utils/browser-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 export const Login = ({ isPasswordLogin }) => {
   const router = useRouter();
@@ -11,13 +11,13 @@ export const Login = ({ isPasswordLogin }) => {
   const emailInputRef = useRef(null);
   const passwordInputRef = useRef(null);
 
+  const supabase = createSupabaseBrowserClient();
+
   const onSubmit = (e) => {
     isPasswordLogin && e.preventDefault();
 
     const email = emailInputRef.current.value;
     const password = passwordInputRef.current?.value;
-
-    const supabase = createSupabaseBrowserClient();
 
     if (isPasswordLogin) {
       supabase.auth
@@ -37,6 +37,17 @@ export const Login = ({ isPasswordLogin }) => {
       console.log("Logging in with magic link:", { email });
     }
   };
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN") {
+        router.push("/tickets");
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   return (
     <form
