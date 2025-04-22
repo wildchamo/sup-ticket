@@ -8,6 +8,12 @@ export default function ErrorPage({ searchParams }) {
       {type === "login-failed" && (
         <strong>Login was not successfull, sorry.</strong>
       )}
+
+      {type === "magicLink" && (
+        <strong>
+          Could not send a magic link. Maybe you had a typo in your E-Mail?
+        </strong>
+      )}
       {!knownErrors.includes(type) && (
         <strong>
           Something went wrong. Please try again or contact support.

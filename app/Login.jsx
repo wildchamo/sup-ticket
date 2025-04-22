@@ -12,7 +12,8 @@ export const Login = ({ isPasswordLogin }) => {
   const passwordInputRef = useRef(null);
 
   const onSubmit = (e) => {
-    e.preventDefault();
+    isPasswordLogin && e.preventDefault();
+
     const email = emailInputRef.current.value;
     const password = passwordInputRef.current?.value;
 
@@ -32,12 +33,17 @@ export const Login = ({ isPasswordLogin }) => {
           }
         });
     } else {
+      //  supabase.auth.signInWithOtp({ email });
       console.log("Logging in with magic link:", { email });
     }
   };
 
   return (
-    <form onSubmit={onSubmit} action={"/auth/pw-login"} method="POST">
+    <form
+      onSubmit={onSubmit}
+      action={isPasswordLogin ? "/auth/pw-login" : "/auth/magic-link"}
+      method="POST"
+    >
       <article style={{ maxWidth: "480px", margin: "auto" }}>
         <header>Login</header>
         <fieldset>

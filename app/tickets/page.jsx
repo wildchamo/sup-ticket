@@ -23,7 +23,7 @@ const dummyTickets = [
 export default function TicketPage() {
   return (
     <div>
-      <h1>Ticket List</h1>
+      <h1>Ticket List hola soy Jose</h1>
       <TicketList tickets={dummyTickets}></TicketList>
     </div>
   );
