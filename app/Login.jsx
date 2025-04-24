@@ -19,7 +19,20 @@ export const Login = ({ formType = "pw-login" }) => {
   const isPasswordRecovery = formType === FORM_TYPES.PASSWORD_RECOVERY;
 
   console.log(formType);
-  const formAction = isPasswordLogin ? `/auth/pw-login` : `/auth/magic-link`;
+  let formAction;
+  switch (formType) {
+    case FORM_TYPES.PASSWORD_LOGIN:
+      formAction = "/auth/pw-login";
+      break;
+    case FORM_TYPES.MAGIC_LINK:
+      formAction = "/auth/magic-link";
+      break;
+    case FORM_TYPES.PASSWORD_RECOVERY:
+      formAction = "/auth/magic-link?type=recovery";
+      break;
+    default:
+      formAction = "/auth/pw-login";
+  }
 
   useEffect(() => {
     const {
@@ -34,7 +47,6 @@ export const Login = ({ formType = "pw-login" }) => {
 
   const onSubmit = (e) => {
     isPasswordLogin && e.preventDefault();
-
     const email = emailInputRef.current.value;
     const password = passwordInputRef.current?.value;
 
@@ -51,7 +63,6 @@ export const Login = ({ formType = "pw-login" }) => {
         });
     } else {
       //  supabase.auth.signInWithOtp({ email });
-      console.log("Logging in with magic link:", { email });
     }
   };
 
@@ -108,8 +119,10 @@ export const Login = ({ formType = "pw-login" }) => {
           )}
         </p>
         <button type="submit">
-          Sign in with
-          {isPasswordLogin ? " Password" : " Magic Link"}
+          {isPasswordRecovery
+            ? "Recover Password"
+            : `Sign in with
+              ${isPasswordLogin ? " Password" : " Magic Link"}`}
         </button>
 
         {!isPasswordRecovery && (

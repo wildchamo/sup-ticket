@@ -10,6 +10,11 @@ export async function POST(request) {
 
   const supabaseAdmin = await getSupabaseAdminClient();
 
+  const searchParams =await request.nextUrl.searchParams
+
+const type = searchParams.get("type");
+
+
   const { data: linkData, error } = await supabaseAdmin.auth.admin.generateLink(
     {
       email,
