@@ -6,13 +6,13 @@ import nodemailer from "nodemailer";
 export async function POST(request) {
   const formData = await request.formData();
 
+
   const email = formData.get("email");
 
+  const { searchParams } = new URL(request.url);
+  const type = searchParams.get("type");
+
   const supabaseAdmin = await getSupabaseAdminClient();
-
-  const searchParams =await request.nextUrl.searchParams
-
-const type = searchParams.get("type");
 
 
   const { data: linkData, error } = await supabaseAdmin.auth.admin.generateLink(
@@ -33,8 +33,9 @@ const type = searchParams.get("type");
 
   const { hashed_token } = linkData.properties;
 
+
   const constructedLink = new URL(
-    "/auth/verify?hashed_token=" + hashed_token,
+    `/auth/verify?hashed_token=${hashed_token}${type?"&type="+type : ""}`,
     request.url
   );
 
