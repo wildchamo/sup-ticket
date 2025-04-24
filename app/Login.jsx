@@ -5,13 +5,32 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-export const Login = ({ isPasswordLogin }) => {
+import { FORM_TYPES } from "./formTypes.js";
+
+export const Login = ({ formType = "pw-login" }) => {
   const router = useRouter();
+  const supabase = createSupabaseBrowserClient();
 
   const emailInputRef = useRef(null);
   const passwordInputRef = useRef(null);
 
-  const supabase = createSupabaseBrowserClient();
+  const isPasswordLogin = formType === FORM_TYPES.PASSWORD_LOGIN;
+  const isMagicLinkLogin = formType === FORM_TYPES.MAGIC_LINK;
+  const isPasswordRecovery = formType === FORM_TYPES.PASSWORD_RECOVERY;
+
+  console.log(formType);
+  const formAction = isPasswordLogin ? `/auth/pw-login` : `/auth/magic-link`;
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN") {
+        router.push("/tickets");
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const onSubmit = (e) => {
     isPasswordLogin && e.preventDefault();
@@ -36,25 +55,10 @@ export const Login = ({ isPasswordLogin }) => {
     }
   };
 
-  useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN") {
-        router.push("/tickets");
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-
   return (
-    <form
-      onSubmit={onSubmit}
-      action={isPasswordLogin ? "/auth/pw-login" : "/auth/magic-link"}
-      method="POST"
-    >
+    <form onSubmit={onSubmit} action={formAction} method="POST">
       <article style={{ maxWidth: "480px", margin: "auto" }}>
-        <header>Login</header>
+        <header>{isPasswordRecovery ? "Recover" : "Login"}</header>
         <fieldset>
           <label htmlFor="email">
             Email
@@ -79,23 +83,27 @@ export const Login = ({ isPasswordLogin }) => {
           )}
         </fieldset>
         <p>
-          {isPasswordLogin ? (
+          {!isPasswordLogin && (
+            <>
+              <Link
+                href={{
+                  pathname: "/",
+                  query: { magicLink: "no" },
+                }}
+              >
+                Go to Password Login
+              </Link>
+              <br />
+            </>
+          )}
+          {!isMagicLinkLogin && (
             <Link
               href={{
                 pathname: "/",
-                query: { magicLink: "yes" },
+                query: { formType: FORM_TYPES.MAGIC_LINK },
               }}
             >
               Go to Magic Link Login
-            </Link>
-          ) : (
-            <Link
-              href={{
-                pathname: "/",
-                query: { magicLink: "no" },
-              }}
-            >
-              Go to Password Login
             </Link>
           )}
         </p>
@@ -103,6 +111,21 @@ export const Login = ({ isPasswordLogin }) => {
           Sign in with
           {isPasswordLogin ? " Password" : " Magic Link"}
         </button>
+
+        {!isPasswordRecovery && (
+          <Link
+            href={{
+              pathname: "/",
+              query: { formType: FORM_TYPES.PASSWORD_RECOVERY },
+            }}
+            style={{
+              textAlign: "center",
+              display: "block",
+            }}
+          >
+            Go to Password Recovery
+          </Link>
+        )}
       </article>
     </form>
   );
