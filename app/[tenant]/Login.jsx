@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 import { FORM_TYPES } from "./formTypes.js";
+import { urlPath } from "../../utils/url-helpers.js";
 
-export const Login = ({ formType = "pw-login" }) => {
+export const Login = ({ formType = "pw-login", tenant }) => {
   const router = useRouter();
   const supabase = createSupabaseBrowserClient();
 
@@ -18,20 +19,22 @@ export const Login = ({ formType = "pw-login" }) => {
   const isMagicLinkLogin = formType === FORM_TYPES.MAGIC_LINK;
   const isPasswordRecovery = formType === FORM_TYPES.PASSWORD_RECOVERY;
 
+  const getPath = (subPath) => urlPath(subPath ?? "", tenant);
+
   console.log(formType);
   let formAction;
   switch (formType) {
     case FORM_TYPES.PASSWORD_LOGIN:
-      formAction = "/auth/pw-login";
+      formAction = getPath("/auth/pw-login");
       break;
     case FORM_TYPES.MAGIC_LINK:
-      formAction = "/auth/magic-link";
+      formAction = getPath("/auth/magic-link");
       break;
     case FORM_TYPES.PASSWORD_RECOVERY:
-      formAction = "/auth/magic-link?type=recovery";
+      formAction = getPath("/auth/magic-link?type=recovery");
       break;
     default:
-      formAction = "/auth/pw-login";
+      formAction = getPath("/auth/pw-login");
   }
 
   useEffect(() => {
@@ -39,7 +42,8 @@ export const Login = ({ formType = "pw-login" }) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN") {
-        router.push("/tickets");
+        console.log(getPath("/tickets"));
+        router.push(getPath("/tickets"));
       }
     });
     return () => subscription.unsubscribe();

@@ -40,13 +40,30 @@ export const updateSession = async (request: NextRequest) => {
   const sessionUser = session.data?.session?.user;
 
 
-  // protected routes
-  if (request.nextUrl.pathname.startsWith("/tickets") && !sessionUser) {
-    return NextResponse.redirect(new URL("/", request.url));
+
+  const requestedPath = request.nextUrl.pathname;
+
+  const [tenant, ...restOfPath] = requestedPath.substr(1).split("/");
+
+  const applicationPath = "/" + restOfPath.join("/");
+
+
+  if (!/[a-z0-9-_]+/.test(tenant)) {
+    return NextResponse.rewrite(new URL("/not-found", request.url));
   }
 
-  if (request.nextUrl.pathname === "/" && sessionUser) {
-    return NextResponse.redirect(new URL("/tickets", request.url));
+
+  // protected routes
+  if (applicationPath.startsWith("/tickets")) {
+    if (!sessionUser) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  } else if (applicationPath === "/") {
+
+    if (sessionUser) {
+      return NextResponse.redirect(new URL(`/${tenant}/tickets`,
+        request.url));
+    }
   }
 
   return response;

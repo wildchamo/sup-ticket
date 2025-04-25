@@ -3,8 +3,9 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/supabase-utils/browser-client";
 import { useEffect } from "react";
+import { urlPath } from "../../../utils/url-helpers";
 
-export default function Nav() {
+export default function Nav({ tenant }) {
   const pathname = usePathname();
 
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function Nav() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_OUT") {
-        router.push("/");
+        router.push("/" + tenant);
       }
     });
     return () => subscription.unsubscribe();
@@ -32,8 +33,10 @@ export default function Nav() {
         <li>
           <Link
             role="button"
-            href="/tickets"
-            {...(pathname === "/tickets" ? activeProps : inactiveProps)}
+            href={urlPath("/tickets", tenant)}
+            {...(pathname === urlPath("/tickets", tenant)
+              ? activeProps
+              : inactiveProps)}
           >
             Ticket List
           </Link>
@@ -41,8 +44,10 @@ export default function Nav() {
         <li>
           <Link
             role="button"
-            href="/tickets/new"
-            {...(pathname === "/tickets/new" ? activeProps : inactiveProps)}
+            href={urlPath("/tickets/new", tenant)}
+            {...(pathname === urlPath("/tickets/new", tenant)
+              ? activeProps
+              : inactiveProps)}
           >
             Create new Ticket
           </Link>
@@ -50,8 +55,10 @@ export default function Nav() {
         <li>
           <Link
             role="button"
-            href="/tickets/users"
-            {...(pathname === "/tickets/users" ? activeProps : inactiveProps)}
+            href={urlPath("/tickets/users", tenant)}
+            {...(pathname === urlPath("/tickets/users")
+              ? activeProps
+              : inactiveProps)}
           >
             User List
           </Link>
@@ -61,7 +68,7 @@ export default function Nav() {
         <li>
           <Link
             role="button"
-            href="/logout"
+            href={urlPath("/logout", tenant)}
             prefetch={false}
             className="secondary"
             onClick={async (e) => {

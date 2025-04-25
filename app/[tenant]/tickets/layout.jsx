@@ -1,12 +1,13 @@
 import Nav from "./Nav";
 import TenantName from "./TenantName";
 
-export default function TicketsLayout(pageProps) {
+export default async function TicketsLayout(pageProps) {
+  const { params } = await pageProps;
+  const { tenant } = await params;
   return (
     <main className="container">
       <section style={{ borderBottom: "1px solid gray" }}>
-        <TenantName tenantName="SupTicket"></TenantName>
-        <Nav></Nav>
+        <TenantName tenantName={tenant || ""} /> <Nav tenant={tenant} />
       </section>
       <section>{pageProps.children}</section>
     </main>
