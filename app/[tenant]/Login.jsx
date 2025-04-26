@@ -8,7 +8,7 @@ import { useEffect, useRef } from "react";
 import { FORM_TYPES } from "./formTypes.js";
 import { urlPath } from "../../utils/url-helpers.js";
 
-export const Login = ({ formType = "pw-login", tenant }) => {
+export const Login = ({ formType = "pw-login", tenant, tenantName }) => {
   const router = useRouter();
   const supabase = createSupabaseBrowserClient();
 
@@ -71,7 +71,13 @@ export const Login = ({ formType = "pw-login", tenant }) => {
   return (
     <form onSubmit={onSubmit} action={formAction} method="POST">
       <article style={{ maxWidth: "480px", margin: "auto" }}>
-        <header>{isPasswordRecovery ? "Recover" : "Login"}</header>
+        <header>
+          {isPasswordRecovery ? "Recover" : "Login"}{" "}
+          <div style={{ display: "block", fontSize: "0.7em" }}>
+            {tenantName}
+          </div>
+        </header>
+
         <fieldset>
           <label htmlFor="email">
             Email
