@@ -20,11 +20,12 @@ const dummyTickets = [
     author: "David",
   },
 ];
-export default function TicketPage() {
+export default async function TicketPage({ params }) {
+  const { tenant } = await params;
   return (
     <div>
       <h1>Ticket List hola soy Jose</h1>
-      <TicketList tickets={dummyTickets}></TicketList>
+      <TicketList tickets={dummyTickets} tenant={tenant}></TicketList>
     </div>
   );
 }
