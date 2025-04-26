@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/supabase-utils/admin-client";
 
 import nodemailer from "nodemailer";
+import { buildUrl } from "../../../../utils/url-helpers";
 
-export async function POST(request) {
+export async function POST(request, { params }) {
   const formData = await request.formData();
-
 
   const email = formData.get("email");
 
@@ -13,7 +13,6 @@ export async function POST(request) {
   const type = searchParams.get("type");
 
   const supabaseAdmin = await getSupabaseAdminClient();
-
 
   const { data: linkData, error } = await supabaseAdmin.auth.admin.generateLink(
     {
@@ -24,7 +23,7 @@ export async function POST(request) {
 
   if (error) {
     return NextResponse.redirect(
-      new URL("/error?type=magicLink", request.url),
+      buildUrl("/error?type=magicLink", await params.tenant, request.url),
       {
         status: 302,
       }
@@ -33,9 +32,9 @@ export async function POST(request) {
 
   const { hashed_token } = linkData.properties;
 
-
-  const constructedLink = new URL(
-    `/auth/verify?hashed_token=${hashed_token}${type?"&type="+type : ""}`,
+  const constructedLink = buildUrl(
+    `/auth/verify?hashed_token=${hashed_token}${type ? "&type=" + type : ""}`,
+    await params.tenant,
     request.url
   );
 
@@ -46,10 +45,13 @@ export async function POST(request) {
 
   const subject = type === "recovery" ? "Password Recovery" : "Magic Link";
 
-  const emailBody = type === "recovery" ? `
+  const emailBody =
+    type === "recovery"
+      ? `
     <h1>Hi there, this is a password recovery email!</h1>
     <p>Click <a href="${constructedLink.toString()}">here</a> to recover.</p>
-    ` : `
+    `
+      : `
     <h1>Hi there, this is a custom magic link email!</h1>
     <p>Click <a href="${constructedLink.toString()}">here</a> to log 
       in.</p>
@@ -62,7 +64,7 @@ export async function POST(request) {
     html: emailBody,
   });
 
-  const thanksUrl = new URL("/magic-thanks", request.url);
+  const thanksUrl = buildUrl("/magic-thanks", await params.tenant, request.url);
 
   return NextResponse.redirect(thanksUrl, {
     status: 302,
