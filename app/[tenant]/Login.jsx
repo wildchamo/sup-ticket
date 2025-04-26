@@ -21,7 +21,6 @@ export const Login = ({ formType = "pw-login", tenant }) => {
 
   const getPath = (subPath) => urlPath(subPath ?? "", tenant);
 
-  console.log(formType);
   let formAction;
   switch (formType) {
     case FORM_TYPES.PASSWORD_LOGIN:
@@ -42,7 +41,6 @@ export const Login = ({ formType = "pw-login", tenant }) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN") {
-        console.log(getPath("/tickets"));
         router.push(getPath("/tickets"));
       }
     });
@@ -102,7 +100,7 @@ export const Login = ({ formType = "pw-login", tenant }) => {
             <>
               <Link
                 href={{
-                  pathname: "/",
+                  pathname: getPath("/"),
                   query: { magicLink: "no" },
                 }}
               >
@@ -114,7 +112,7 @@ export const Login = ({ formType = "pw-login", tenant }) => {
           {!isMagicLinkLogin && (
             <Link
               href={{
-                pathname: "/",
+                pathname: getPath("/"),
                 query: { formType: FORM_TYPES.MAGIC_LINK },
               }}
             >
@@ -132,7 +130,7 @@ export const Login = ({ formType = "pw-login", tenant }) => {
         {!isPasswordRecovery && (
           <Link
             href={{
-              pathname: "/",
+              pathname: getPath("/"),
               query: { formType: FORM_TYPES.PASSWORD_RECOVERY },
             }}
             style={{

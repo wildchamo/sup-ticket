@@ -16,11 +16,7 @@ export async function GET(request, { params }) {
 
   if (error) {
     return NextResponse.redirect(
-      buildUrl(
-        "/error?type=invalid_magiclink",
-        await params.tenant,
-        request.url
-      ),
+      buildUrl("/error?type=invalid_magiclink", await params.tenant, request),
       {
         status: 302,
       }
@@ -28,11 +24,11 @@ export async function GET(request, { params }) {
   } else {
     if (type == "recovery") {
       return NextResponse.redirect(
-        buildUrl("/tickets/change-password", await params.tenant, request.url)
+        buildUrl("/tickets/change-password", await params.tenant, request)
       );
     } else {
       return NextResponse.redirect(
-        buildUrl("/tickets", await params.tenant, request.url)
+        buildUrl("/tickets", await params.tenant, request)
       );
     }
   }

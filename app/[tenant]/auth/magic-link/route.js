@@ -9,6 +9,8 @@ export async function POST(request, { params }) {
 
   const email = formData.get("email");
 
+  const { tenant } = await params;
+
   const { searchParams } = new URL(request.url);
   const type = searchParams.get("type");
 
@@ -23,7 +25,7 @@ export async function POST(request, { params }) {
 
   if (error) {
     return NextResponse.redirect(
-      buildUrl("/error?type=magicLink", await params.tenant, request.url),
+      buildUrl("/error?type=magicLink", tenant, request.url),
       {
         status: 302,
       }
@@ -32,11 +34,10 @@ export async function POST(request, { params }) {
 
   const { hashed_token } = linkData.properties;
 
-  const constructedLink = buildUrl(
-    `/auth/verify?hashed_token=${hashed_token}${type ? "&type=" + type : ""}`,
-    await params.tenant,
-    request.url
-  );
+  const mainUrl = `/auth/verify?hashed_token=${hashed_token}${
+    type ? "&type=" + type : ""
+  }`;
+  const constructedLink = buildUrl(mainUrl, tenant, request);
 
   const transporter = nodemailer.createTransport({
     host: "localhost",
@@ -64,7 +65,7 @@ export async function POST(request, { params }) {
     html: emailBody,
   });
 
-  const thanksUrl = buildUrl("/magic-thanks", await params.tenant, request.url);
+  const thanksUrl = buildUrl("/magic-thanks", tenant, request);
 
   return NextResponse.redirect(thanksUrl, {
     status: 302,
