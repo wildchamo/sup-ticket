@@ -1,9 +1,9 @@
 import { Login } from "./Login";
-import { createSupabaseServerClient } from "../../supabase-utils/server-client";
+import { getSupabaseAdminClient } from "../../supabase-utils/admin-client";
 import { notFound } from "next/navigation";
 
 export default async function LoginPage({ searchParams, params }) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await getSupabaseAdminClient();
 
   const { tenant } = await params;
 

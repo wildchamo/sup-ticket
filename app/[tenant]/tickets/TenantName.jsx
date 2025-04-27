@@ -1,7 +1,7 @@
-import { createSupabaseBrowserClient } from "../../../supabase-utils/browser-client";
+import { createSupabaseServerClient } from "../../../supabase-utils/server-client";
 
 export default async function TenantName(props) {
-  const supabase = createSupabaseBrowserClient();
+  const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
     .from("tenants")
