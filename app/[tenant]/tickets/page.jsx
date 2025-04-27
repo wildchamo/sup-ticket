@@ -24,7 +24,7 @@ export default async function TicketPage({ params }) {
   const { tenant } = await params;
   return (
     <div>
-      <h1>Ticket List hola soy Jose</h1>
+      <h1>Ticket List</h1>
       <TicketList tickets={dummyTickets} tenant={tenant}></TicketList>
     </div>
   );

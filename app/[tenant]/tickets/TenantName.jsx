@@ -1,4 +1,18 @@
-export default function TenantName(props) {
+import { createSupabaseBrowserClient } from "../../../supabase-utils/browser-client";
+
+export default async function TenantName(props) {
+  const supabase = createSupabaseBrowserClient();
+
+  const { data, error } = await supabase
+    .from("tenants")
+    .select("name")
+    .eq("id", props.tenant)
+    .single();
+
+  console.log("TenantName", data, error);
+
+  let tenantName = data?.name || "Unknown";
+
   return (
     <header style={{ marginBottom: "10px" }}>
       <div
@@ -10,7 +24,7 @@ export default function TenantName(props) {
         }}
       >
         Ticket System
-        <strong style={{ marginLeft: "1ex" }}>{props.tenantName}</strong>
+        <strong style={{ marginLeft: "1ex" }}>{tenantName}</strong>
       </div>
     </header>
   );
