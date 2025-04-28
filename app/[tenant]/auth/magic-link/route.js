@@ -23,7 +23,9 @@ export async function POST(request, { params }) {
     }
   );
 
-  if (error) {
+  const user = linkData.user;
+
+  if (error || !user.app_metadata?.tenants.includes(tenant)) {
     return NextResponse.redirect(
       buildUrl("/error?type=magicLink", tenant, request.url),
       {
