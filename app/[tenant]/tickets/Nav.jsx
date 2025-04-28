@@ -16,12 +16,14 @@ export default function Nav({ tenant }) {
 
   const inactiveProps = { className: "secondary outline" };
 
+  const getPath = (subPath) => urlPath(subPath ?? "/", tenant);
+
   useEffect(() => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_OUT") {
-        router.push("/" + tenant);
+        router.push("/");
       }
     });
     return () => subscription.unsubscribe();
@@ -68,7 +70,7 @@ export default function Nav({ tenant }) {
         <li>
           <Link
             role="button"
-            href={urlPath("/logout", tenant)}
+            href={getPath("/logout")}
             prefetch={false}
             className="secondary"
             onClick={async (e) => {
