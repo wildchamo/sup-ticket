@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "../../../supabase-utils/server-client";
+import { notFound } from "next/navigation";
 
 export default async function TenantName(props) {
   const supabase = await createSupabaseServerClient();
@@ -9,9 +10,11 @@ export default async function TenantName(props) {
     .eq("id", props.tenant)
     .single();
 
-  console.log("TenantName", data, error);
+  if (error) {
+    notFound();
+  }
 
-  let tenantName = data?.name || "Unknown";
+  let tenantName = data?.name;
 
   return (
     <header style={{ marginBottom: "10px" }}>

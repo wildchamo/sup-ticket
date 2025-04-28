@@ -18,7 +18,12 @@ export async function POST(request, { params }) {
   });
 
   const userData = data?.user;
-  if (error || !userData) {
+  if (
+    error ||
+    !userData ||
+    !userData.app_metadata.tenants.includes(params.tenant)
+  ) {
+    await supabase.auth.signOut();
     return NextResponse.redirect(
       buildUrl("/error?type=login-failed", await params.tenant, request.url),
       {
