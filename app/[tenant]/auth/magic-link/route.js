@@ -23,11 +23,11 @@ export async function POST(request, { params }) {
     }
   );
 
-  const user = linkData.user;
+  const user = linkData?.user;
 
-  if (error || !user.app_metadata?.tenants.includes(tenant)) {
+  if (error || !user.app_metadata?.tenants?.includes(tenant)) {
     return NextResponse.redirect(
-      buildUrl("/error?type=magicLink", tenant, request.url),
+      buildUrl("/error?type=magicLink", tenant, request),
       {
         status: 302,
       }
