@@ -56,10 +56,12 @@ export const updateSession = async (request: NextRequest) => {
   // protected routes
   if (applicationPath.startsWith("/tickets")) {
     if (!sessionUser) {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.redirect(new URL(`/${tenant}/`, request.url));
+    } else if (!sessionUser.app_metadata?.tenants.includes(tenant)) {
+      return NextResponse.rewrite(new URL("/not-found", request.url));
     }
-  } else if (applicationPath === "/") {
 
+  } else if (applicationPath === "/") {
     if (sessionUser) {
       return NextResponse.redirect(new URL(`/${tenant}/tickets`,
         request.url));
