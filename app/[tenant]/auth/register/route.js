@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "../../../../supabase-utils/admin-client";
 import { buildUrl } from "../../../../utils/url-helpers";
+import { sendOTPLink } from "../../../../utils/send-otp";
 
 export async function POST(request, { params }) {
   const isNonEmptyString = (value) =>
@@ -93,6 +94,8 @@ export async function POST(request, { params }) {
     await supabaseAdmin.auth.admin.deleteUser(userData.user.id);
     return NextResponse.redirect(buildUrl("/error", tenant, request), 302);
   }
+
+  await sendOTPLink(email, "signup", tenant, request);
 
   return Response.json({ email, password, tenant, emailHost });
 }

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { buildUrl } from "../../../../utils/url-helpers";
 
 export async function GET(request, { params }) {
+  const { tenant } = await params;
   const { searchParams } = new URL(request.url);
   const hashed_token = searchParams.get("hashed_token");
   const type = searchParams.get("type");
@@ -10,13 +11,13 @@ export async function GET(request, { params }) {
   const supabase = await createSupabaseServerClient();
 
   const { error } = await supabase.auth.verifyOtp({
-    type: "magiclink",
+    type: type === "signup" ? "signup" : "magiclink",
     token_hash: hashed_token,
   });
 
   if (error) {
     return NextResponse.redirect(
-      buildUrl("/error?type=invalid_magiclink", await params.tenant, request),
+      buildUrl("/error?type=invalid_magiclink", tenant, request),
       {
         status: 302,
       }
@@ -24,12 +25,10 @@ export async function GET(request, { params }) {
   } else {
     if (type == "recovery") {
       return NextResponse.redirect(
-        buildUrl("/tickets/change-password", await params.tenant, request)
+        buildUrl("/tickets/change-password", tenant, request)
       );
     } else {
-      return NextResponse.redirect(
-        buildUrl("/tickets", await params.tenant, request)
-      );
+      return NextResponse.redirect(buildUrl("/tickets", tenant, request));
     }
   }
 }

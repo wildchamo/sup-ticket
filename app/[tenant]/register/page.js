@@ -3,7 +3,7 @@ import { urlPath } from "@/utils/url-helpers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 export default async function Registration({ params }) {
-  const { tenant } = params;
+  const { tenant } = await params;
   const supabaseAdmin = getSupabaseAdminClient();
   const { data, error } = await supabaseAdmin
     .from("tenants")
