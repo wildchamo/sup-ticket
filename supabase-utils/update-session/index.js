@@ -69,15 +69,11 @@ export const updateSession = async (request) => {
     }
   }
 
-  const rewrittenResponse = NextResponse.rewrite(
-    new URL(
-      `/${tenant}${applicationPath}${request.nextUrl.search}`,
-      request.url
-    ),
-    {
-      request,
-    }
-  );
+  const newURL = `/${tenant}${applicationPath}${request.nextUrl.search}`;
+  console.log("newURL", newURL);
+  const rewrittenResponse = NextResponse.rewrite(new URL(newURL, request.url), {
+    request,
+  });
 
   const cookiesToSet = response.value?.cookies?.getAll();
 
