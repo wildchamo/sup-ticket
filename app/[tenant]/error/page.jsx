@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { urlPath } from "../../../utils/url-helpers";
 export default async function ErrorPage({ searchParams, params }) {
-  const knownErrors = ["login-failed", "magicLink", "invalid_magiclink"];
+  const knownErrors = [
+    "login-failed",
+    "magicLink",
+    "invalid_magiclink",
+    "register_mail_mismatch",
+  ];
   const { type } = await searchParams;
   const { tenant } = await params;
   return (
@@ -21,6 +26,14 @@ export default async function ErrorPage({ searchParams, params }) {
         <strong>
           The magic link was invalid. Maybe it expired? Please request a new
           one.
+        </strong>
+      )}
+      {type === "register_mail_mismatch" && (
+        <strong>
+          You are not legitimated to register an account
+          <span>
+            {searchParams.email ? " with " + searchParams.email : ""}.
+          </span>
         </strong>
       )}
       {!knownErrors.includes(type) && (
