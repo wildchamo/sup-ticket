@@ -45,7 +45,54 @@ export async function POST(request, { params }) {
     );
   }
 
-  console.log("Tenant data:", data);
+  const { data: userData, error: userError } =
+    await supabaseAdmin.auth.admin.createUser({
+      email,
+      password,
+      app_metadata: {
+        tenants: [tenant],
+      },
+    });
+
+  if (userError) {
+    const userExists = userError.message.includes("already been registered");
+    if (userExists) {
+      return NextResponse.redirect(
+        buildUrl(
+          `/error?type=register_mail_exists&email=${safeEmailString}`,
+          tenant,
+          request
+        ),
+        302
+      );
+    } else {
+      return NextResponse.redirect(
+        buildUrl("/error?type=register_unknown", tenant, request),
+        302
+      );
+    }
+  }
+
+  const { data: serviceUser } = await supabaseAdmin
+    .from("service_users")
+    .insert({
+      full_name: name,
+      supabase_user: userData.user.id,
+    })
+    .select()
+    .single();
+
+  const { error: tpError } = await supabaseAdmin
+    .from("tenant_permissions")
+    .insert({
+      tenant,
+      service_user: serviceUser?.id,
+    });
+
+  if (tpError) {
+    await supabaseAdmin.auth.admin.deleteUser(userData.user.id);
+    return NextResponse.redirect(buildUrl("/error", tenant, request), 302);
+  }
 
   return Response.json({ email, password, tenant, emailHost });
 }

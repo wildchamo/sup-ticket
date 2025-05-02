@@ -6,6 +6,8 @@ export default async function ErrorPage({ searchParams, params }) {
     "magicLink",
     "invalid_magiclink",
     "register_mail_mismatch",
+    "register_unknown",
+    "register_mail_exists",
   ];
   const { type } = await searchParams;
   const { tenant } = await params;
@@ -36,6 +38,19 @@ export default async function ErrorPage({ searchParams, params }) {
           </span>
         </strong>
       )}
+
+      {type === "register_mail_exists" && (
+        <strong>
+          There is already an account registered with &nbsp;
+          <u>{searchParams.email}</u>.
+        </strong>
+      )}
+      {type === "register_unknown" && (
+        <strong>
+          Sorry but an unknown error occurred when trying to create an account.
+        </strong>
+      )}
+
       {!knownErrors.includes(type) && (
         <strong>
           Something went wrong. Please try again or contact support.
