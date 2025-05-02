@@ -1,6 +1,6 @@
 "use client";
 
-import { createSupabaseBrowserClient } from "@/supabase-utils/browser-client";
+import { createSupabaseBrowserClient } from "../../supabase-utils/browser-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
@@ -40,7 +40,6 @@ export const Login = ({ formType = "pw-login", tenant, tenantName }) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log(session.user.app_metadata.tenants);
       if (event === "SIGNED_IN") {
         if (session.user.app_metadata.tenants?.includes(tenant)) {
           router.push(`/tickets`);
@@ -153,6 +152,17 @@ export const Login = ({ formType = "pw-login", tenant, tenantName }) => {
             Go to Password Recovery
           </Link>
         )}
+
+        <Link
+          href={urlPath("/register", tenant)}
+          style={{
+            textAlign: "center",
+            display: "block",
+            marginTop: "1em",
+          }}
+        >
+          Create account
+        </Link>
       </article>
     </form>
   );
