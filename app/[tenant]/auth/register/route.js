@@ -97,5 +97,10 @@ export async function POST(request, { params }) {
 
   await sendOTPLink(email, "signup", tenant, request);
 
-  return Response.json({ email, password, tenant, emailHost });
+  // return Response.json({ email, password, tenant, emailHost });
+
+  return NextResponse.redirect(
+    buildUrl(`/registration-success?email=${safeEmailString}`, tenant, request),
+    302
+  );
 }
