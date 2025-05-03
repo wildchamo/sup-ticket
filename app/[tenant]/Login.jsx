@@ -94,6 +94,7 @@ export const Login = ({ formType = "pw-login", tenant, tenantName }) => {
               required
             />
           </label>
+
           {isPasswordLogin && (
             <label htmlFor="password">
               Password
@@ -136,6 +137,24 @@ export const Login = ({ formType = "pw-login", tenant, tenantName }) => {
             ? "Recover Password"
             : `Sign in with
               ${isPasswordLogin ? " Password" : " Magic Link"}`}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            supabase.auth.signInWithOAuth({
+              provider: "google",
+              options: {
+                redirectTo: window.location.origin + "/auth/verify-oauth",
+                queryParams: {
+                  access_type: "offline",
+                  prompt: "consent",
+                },
+              },
+            });
+          }}
+        >
+          Sign in with Google
         </button>
 
         {!isPasswordRecovery && (
