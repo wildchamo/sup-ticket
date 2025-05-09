@@ -142,10 +142,12 @@ export const Login = ({ formType = "pw-login", tenant, tenantName }) => {
         <button
           type="button"
           onClick={() => {
+            const redirectURL = window.location.origin + "/auth/verify-oauth";
+            console.log("Redirect URL:", redirectURL);
             supabase.auth.signInWithOAuth({
               provider: "google",
               options: {
-                redirectTo: window.location.origin + "/auth/verify-oauth",
+                redirectTo: redirectURL,
                 queryParams: {
                   access_type: "offline",
                   prompt: "consent",
