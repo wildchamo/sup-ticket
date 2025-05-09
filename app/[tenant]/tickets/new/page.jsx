@@ -1,9 +1,10 @@
 import TicketForm from "./TicketForm";
-export default function NewTicketPage() {
+export default async function NewTicketPage({ params }) {
+  const { tenant } = await params;
   return (
     <div>
       <h3>Create a new ticket</h3>
-      <TicketForm></TicketForm>
+      <TicketForm tenant={tenant}></TicketForm>
     </div>
   );
 }
