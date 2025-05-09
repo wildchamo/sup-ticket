@@ -1,19 +1,32 @@
+import { createSupabaseServerClient } from "../../../../../supabase-utils/server-client";
 import classes from "./styles.module.css";
 import { TicketComments } from "./TicketCommets";
-export default function TicketDetailsPage({ params }) {
+
+export default async function TicketDetailsPage({ params }) {
+  const supabase = await createSupabaseServerClient();
+  const { id } = await params;
+
+  const { data: ticket, error } = await supabase
+    .from("tickets")
+    .select("*")
+    .eq("id", Number(id))
+    .single();
+
+  console.log(ticket);
+
   return (
     <article className={classes.ticketDetails}>
       <header>
-        <strong>#{params.id}</strong> -{" "}
-        <strong className={classes.ticketStatusGreen}>Open</strong>
+        <strong>#{id}</strong> -{" "}
+        <strong className={classes.ticketStatusGreen}>{ticket.status}</strong>
         <br />
         <small className={classes.authorAndDate}>
           Created by <strong>AuthorName</strong> at{" "}
-          <time>December 10th 2025</time>
+          <time>{new Date(ticket.created_at).toISOString()}</time>
         </small>
-        <h2>Ticket title should be here</h2>
+        <h2>{ticket.title}</h2>
       </header>
-      <section>Some details about the ticket should be here.</section>
+      <section>{ticket.description}.</section>
 
       <TicketComments />
     </article>

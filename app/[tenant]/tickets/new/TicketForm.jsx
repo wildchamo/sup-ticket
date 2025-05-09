@@ -1,7 +1,7 @@
 "use client";
 import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRef } from "react";
 import { urlPath } from "../../../../utils/url-helpers";
 
@@ -10,7 +10,9 @@ export default function CreateTicket({ tenant }) {
   const supabase = createBrowserClient();
   const router = useRouter();
 
-  console.log(tenant);
+  useEffect(() => {
+    router.prefetch(urlPath(`/tickets/details/[id]`));
+  }, [router]);
 
   const ticketTitleRef = useRef(null);
   const ticketDescriptionRef = useRef(null);
@@ -39,7 +41,6 @@ export default function CreateTicket({ tenant }) {
                   alert("Could not create ticket");
                   console.error(error);
                 } else {
-                  alert("Successfully created ticket");
                   router.push(urlPath(`/tickets/details/${data.id}`, tenant));
                 }
               });
