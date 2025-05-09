@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "../../../../../supabase-utils/server-client";
 import classes from "./styles.module.css";
 import { TicketComments } from "./TicketCommets";
@@ -12,21 +13,23 @@ export default async function TicketDetailsPage({ params }) {
     .eq("id", Number(id))
     .single();
 
-  console.log(ticket);
+  if (error) return notFound();
+
+  const { created_at, title, description, created_by, status } = ticket;
 
   return (
     <article className={classes.ticketDetails}>
       <header>
         <strong>#{id}</strong> -{" "}
-        <strong className={classes.ticketStatusGreen}>{ticket.status}</strong>
+        <strong className={classes.ticketStatusGreen}>{status}</strong>
         <br />
         <small className={classes.authorAndDate}>
-          Created by <strong>AuthorName</strong> at{" "}
-          <time>{new Date(ticket.created_at).toISOString()}</time>
+          Created by <strong>{created_by}</strong> at{" "}
+          <time>{new Date(created_at).toISOString()}</time>
         </small>
-        <h2>{ticket.title}</h2>
+        <h2>{title}</h2>
       </header>
-      <section>{ticket.description}.</section>
+      <section>{description}.</section>
 
       <TicketComments />
     </article>
