@@ -3,33 +3,43 @@ import { urlPath } from "../../../utils/url-helpers";
 import { createSupabaseServerClient } from "../../../supabase-utils/server-client";
 import { TICKET_STATUS } from "../../../utils/constants";
 
+export const dynamic = "force-dynamic";
+
 export async function TicketList({ tenant, searchParams }) {
-  let { page = 1 } = await searchParams;
+  let { page = 1, search } = await searchParams;
 
   if (Number.isInteger(Number(page)) && Number(page) > 0) {
     page = Number(page);
   } else {
     page = 1;
   }
+  const numberOfTicketsOnPage = 6;
 
   const supabase = await createSupabaseServerClient();
 
-  console.log(page);
-
-  const startingPoint = (page - 1) * 6;
-
-  const { data: tickets, error } = await supabase
-    .from("tickets")
-    .select("*")
-    .eq("tenant", tenant)
-    .range(startingPoint, startingPoint + 5);
-
-  const { count } = await supabase
+  let countStatement = supabase
     .from("tickets")
     .select("*", { count: "exact", head: true })
     .eq("tenant", tenant);
 
-  const moreRows = count - page * 6 > 0;
+  let ticketsStatement = supabase.from("tickets").select().eq("tenant", tenant);
+
+  const startingPoint = (page - 1) * numberOfTicketsOnPage;
+
+  const searchValue = search?.trim();
+
+  if (searchValue) {
+  }
+
+  ticketsStatement = ticketsStatement
+    .order("status", { ascending: true })
+    .order("created_at", { ascending: false })
+    .range(startingPoint, startingPoint + 5);
+
+  const { count } = await countStatement;
+  const { data: tickets } = await ticketsStatement;
+
+  const moreRows = count - page * numberOfTicketsOnPage > 0;
   return (
     <>
       <table>
