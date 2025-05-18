@@ -22,6 +22,16 @@ export default async function TicketDetailsPage({ params }) {
   const dateString = new Date(created_at).toLocaleString("en-US");
   const ticketStatus = TICKET_STATUS[status];
 
+  const supabase_user_id = (await supabase.auth.getUser()).data.user.id;
+
+  const { data: serviceUser } = await supabase
+    .from("service_users")
+    .select("id")
+    .eq("supabase_user", supabase_user_id)
+    .single();
+
+  const isAuthor = serviceUser.id === ticket.created_by;
+
   return (
     <article className={classes.ticketDetails}>
       <header>
@@ -34,6 +44,8 @@ export default async function TicketDetailsPage({ params }) {
         <h2>{title}</h2>
       </header>
       <section>{description}.</section>
+
+      {isAuthor && "hola"}
 
       <TicketComments />
     </article>
