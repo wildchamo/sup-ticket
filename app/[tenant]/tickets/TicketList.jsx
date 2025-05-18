@@ -29,8 +29,19 @@ export async function TicketList({ tenant, searchParams }) {
   const searchValue = search?.trim();
 
   if (searchValue) {
-    countStatement = countStatement.textSearch("title", searchValue);
-    ticketsStatement = ticketsStatement.textSearch("title", searchValue);
+    const cleanSearchString = searchValue
+      .replaceAll('"', "")
+      .replaceAll("\\", "")
+      .replaceAll("%", "");
+
+    const postgrestSearchValue = '"%' + cleanSearchString + '%"';
+
+    const postgrestFilterString =
+      `title.ilike.${postgrestSearchValue}` +
+      `, description.ilike.${postgrestSearchValue}`;
+
+    countStatement = countStatement.or(postgrestFilterString);
+    ticketsStatement = ticketsStatement.or(postgrestFilterString);
   }
 
   ticketsStatement = ticketsStatement
@@ -78,7 +89,7 @@ export async function TicketList({ tenant, searchParams }) {
           <Link
             style={{ marginLeft: "auto" }}
             role="button"
-            href={{ query: { page: page + 1 } }}
+            href={{ query: { page: page + 1 }, search: searchParams.search }}
           >
             Next page
           </Link>
