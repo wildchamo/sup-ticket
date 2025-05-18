@@ -10,9 +10,12 @@ export default async function TicketPage({ params, searchParams }) {
       <TicketFilters tenant={tenant} />
       <Suspense
         fallback={<div aria-busy="true">Loading tickets...</div>}
-        key={JSON.stringify(searchParams)}
+        key={JSON.stringify(await searchParams)}
       >
-        <TicketList tenant={tenant} searchParams={searchParams}></TicketList>
+        <TicketList
+          tenant={tenant}
+          searchParams={await searchParams}
+        ></TicketList>
       </Suspense>
     </div>
   );

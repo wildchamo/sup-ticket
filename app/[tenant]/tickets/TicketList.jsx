@@ -29,6 +29,8 @@ export async function TicketList({ tenant, searchParams }) {
   const searchValue = search?.trim();
 
   if (searchValue) {
+    countStatement = countStatement.textSearch("title", searchValue);
+    ticketsStatement = ticketsStatement.textSearch("title", searchValue);
   }
 
   ticketsStatement = ticketsStatement
@@ -37,7 +39,7 @@ export async function TicketList({ tenant, searchParams }) {
     .range(startingPoint, startingPoint + 5);
 
   const { count } = await countStatement;
-  const { data: tickets } = await ticketsStatement;
+  const { data: tickets, error } = await ticketsStatement;
 
   const moreRows = count - page * numberOfTicketsOnPage > 0;
   return (
