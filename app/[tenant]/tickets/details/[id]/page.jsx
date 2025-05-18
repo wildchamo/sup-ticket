@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "../../../../../supabase-utils/server-client";
-import classes from "./styles.module.css";
-import { TicketComments } from "./TicketCommets";
 import { TICKET_STATUS } from "../../../../../utils/constants";
+import TicketDetails from "./TicketDetails";
 
 export default async function TicketDetailsPage({ params }) {
   const supabase = await createSupabaseServerClient();
@@ -33,31 +32,14 @@ export default async function TicketDetailsPage({ params }) {
   const isAuthor = serviceUser.id === ticket.created_by;
 
   return (
-    <article className={classes.ticketDetails}>
-      <header>
-        <div className="grid">
-          <div>
-            <strong>#{id}</strong> -{" "}
-            <strong className={classes.ticketStatusGreen}>
-              {ticketStatus}
-            </strong>
-          </div>
-
-          {isAuthor && (
-            <button role="button" className={classes.littledanger}>
-              Delete ticket
-            </button>
-          )}
-        </div>
-        <br />
-        <small className={classes.authorAndDate}>
-          Created by <strong>{author_name}</strong> at <time>{dateString}</time>
-        </small>
-        <h2>{title}</h2>
-      </header>
-      <section>{description}.</section>
-
-      <TicketComments />
-    </article>
+    <TicketDetails
+      id={id}
+      ticketStatus={ticketStatus}
+      isAuthor={isAuthor}
+      author_name={author_name}
+      dateString={dateString}
+      title={title}
+      description={description}
+    />
   );
 }
