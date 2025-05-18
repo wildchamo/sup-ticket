@@ -35,8 +35,20 @@ export default async function TicketDetailsPage({ params }) {
   return (
     <article className={classes.ticketDetails}>
       <header>
-        <strong>#{id}</strong> -{" "}
-        <strong className={classes.ticketStatusGreen}>{ticketStatus}</strong>
+        <div className="grid">
+          <div>
+            <strong>#{id}</strong> -{" "}
+            <strong className={classes.ticketStatusGreen}>
+              {ticketStatus}
+            </strong>
+          </div>
+
+          {isAuthor && (
+            <button role="button" className={classes.littledanger}>
+              Delete ticket
+            </button>
+          )}
+        </div>
         <br />
         <small className={classes.authorAndDate}>
           Created by <strong>{author_name}</strong> at <time>{dateString}</time>
@@ -44,8 +56,6 @@ export default async function TicketDetailsPage({ params }) {
         <h2>{title}</h2>
       </header>
       <section>{description}.</section>
-
-      {isAuthor && "hola"}
 
       <TicketComments />
     </article>
