@@ -5,7 +5,7 @@ import TicketDetails from "./TicketDetails";
 
 export default async function TicketDetailsPage({ params }) {
   const supabase = await createSupabaseServerClient();
-  const { id } = await params;
+  const { id, tenant } = await params;
 
   const { data: ticket, error } = await supabase
     .from("tickets")
@@ -40,6 +40,7 @@ export default async function TicketDetailsPage({ params }) {
       dateString={dateString}
       title={title}
       description={description}
+      tenant={tenant}
     />
   );
 }

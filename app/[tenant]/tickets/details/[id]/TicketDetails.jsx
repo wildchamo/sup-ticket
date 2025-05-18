@@ -1,6 +1,10 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { TicketComments } from "./TicketCommets";
 import classes from "./styles.module.css";
-
+import { createSupabaseBrowserClient } from "../../../../../supabase-utils/browser-client";
+import { urlPath } from "../../../../../utils/url-helpers";
 // ... existing code ...
 const TicketDetails = ({
   id,
@@ -10,7 +14,11 @@ const TicketDetails = ({
   dateString,
   title,
   description,
+  tenant,
 }) => {
+  const supabase = createSupabaseBrowserClient();
+  const router = useRouter();
+
   return (
     <article className={classes.ticketDetails}>
       <header>
@@ -23,7 +31,19 @@ const TicketDetails = ({
           </div>
 
           {isAuthor && (
-            <button role="button" className={classes.littledanger}>
+            <button
+              role="button"
+              className={classes.littledanger}
+              onClick={() => {
+                supabase
+                  .from("tickets")
+                  .delete()
+                  .eq("id", id)
+                  .then(() => {
+                    router.push(urlPath("/tickets", tenant));
+                  });
+              }}
+            >
               Delete ticket
             </button>
           )}
