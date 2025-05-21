@@ -1,4 +1,5 @@
 import { IconCheck, IconUserOff } from "@tabler/icons-react";
+import { createSupabaseServerClient } from "../../../../supabase-utils/server-client";
 
 const users = [
   {
@@ -14,7 +15,16 @@ const users = [
   // ... add as much users as you want
 ];
 
-export default function TicketUsersPage() {
+export default async function TicketUsersPage({ params }) {
+  const { tenant } = await params;
+  const supabase = await createSupabaseServerClient();
+
+  const { data: users, error } = await supabase.rpc("get_users_by_tenant", {
+    tenant_id: tenant,
+  });
+
+  console.log(users, error);
+
   return (
     <table>
       <thead>
@@ -25,17 +35,18 @@ export default function TicketUsersPage() {
       </thead>
       <tbody>
         {users.map((user) => (
-          <tr key={user.name}>
+          <tr key={user.id}>
             <td
               style={{
                 display: "flex",
-                color: !user.isAvailable ? "red" : undefined,
+                color: !user.is_available ? "red" : undefined,
               }}
             >
-              {user.isAvailable ? <IconCheck /> : <IconUserOff />} {user.name}
+              {user.is_available ? <IconCheck /> : <IconUserOff />}{" "}
+              {user.full_name}
             </td>
 
-            <td>{user.job}</td>
+            <td>{user.job_title}</td>
           </tr>
         ))}
       </tbody>
