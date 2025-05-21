@@ -1,6 +1,6 @@
 import { IconCheck, IconUserOff } from "@tabler/icons-react";
 import { createSupabaseServerClient } from "../../../../supabase-utils/server-client";
-
+import { notFound } from "next/navigation";
 const users = [
   {
     name: "Alice Ling",
@@ -23,7 +23,9 @@ export default async function TicketUsersPage({ params }) {
     tenant_id: tenant,
   });
 
-  console.log(users, error);
+  if (error) {
+    return notFound();
+  }
 
   return (
     <table>
