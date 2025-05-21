@@ -5,7 +5,8 @@ import { TicketComments } from "./TicketCommets";
 import classes from "./styles.module.css";
 import { createSupabaseBrowserClient } from "../../../../../supabase-utils/browser-client";
 import { urlPath } from "../../../../../utils/url-helpers";
-// ... existing code ...
+import { AssigneeSelect } from "../../../../../components/AssigneeSelect";
+
 const TicketDetails = ({
   id,
   ticketStatus,
@@ -15,6 +16,7 @@ const TicketDetails = ({
   title,
   description,
   tenant,
+  assignee,
 }) => {
   const supabase = createSupabaseBrowserClient();
   const router = useRouter();
@@ -29,6 +31,20 @@ const TicketDetails = ({
               {ticketStatus}
             </strong>
           </div>
+
+          <AssigneeSelect
+            tenant={tenant}
+            onValueChanged={(v) => {
+              supabase
+                .from("tickets")
+                .update({
+                  assignee: v,
+                })
+                .eq("id", id)
+                .then(() => router.refresh());
+            }}
+            initialValue={assignee}
+          />
 
           {isAuthor && (
             <button

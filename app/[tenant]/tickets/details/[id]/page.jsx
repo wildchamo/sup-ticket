@@ -15,9 +15,18 @@ export default async function TicketDetailsPage({ params }) {
 
   if (error) return notFound();
 
-  const { created_at, title, description, created_by, status, author_name } =
-    ticket;
+  const {
+    created_at,
+    title,
+    description,
+    created_by,
+    status,
+    author_name,
+    assignee,
+    assignee_name,
+  } = ticket;
 
+  console.log(ticket);
   const dateString = new Date(created_at).toLocaleString("en-US");
   const ticketStatus = TICKET_STATUS[status];
 
@@ -41,6 +50,7 @@ export default async function TicketDetailsPage({ params }) {
       title={title}
       description={description}
       tenant={tenant}
+      assignee={assignee}
     />
   );
 }

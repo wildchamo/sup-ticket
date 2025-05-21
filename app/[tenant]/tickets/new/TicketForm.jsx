@@ -35,6 +35,7 @@ export default function CreateTicket({ tenant }) {
                 title,
                 description,
                 tenant,
+                assignee,
               })
               .select()
               .single()
