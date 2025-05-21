@@ -4,11 +4,14 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useRef } from "react";
 import { urlPath } from "../../../../utils/url-helpers";
+import { AssigneeSelect } from "../../../../components/AssigneeSelect";
 
 export default function CreateTicket({ tenant }) {
   const [isLoading, setIsLoading] = useState(false);
   const supabase = createBrowserClient();
   const router = useRouter();
+
+  const [assignee, setAssignee] = useState(null);
 
   useEffect(() => {
     router.prefetch(urlPath(`/tickets/details/[id]`));
@@ -55,6 +58,10 @@ export default function CreateTicket({ tenant }) {
           ref={ticketTitleRef}
           placeholder="Add a title"
           disabled={isLoading}
+        />
+        <AssigneeSelect
+          tenant={tenant}
+          onValueChanged={(v) => setAssignee(v)}
         />
         <textarea
           ref={ticketDescriptionRef}
