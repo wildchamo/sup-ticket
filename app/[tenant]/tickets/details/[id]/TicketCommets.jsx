@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 
 import classes from "./styles.module.css";
 import { createSupabaseBrowserClient } from "../../../../../supabase-utils/browser-client";
@@ -7,7 +7,28 @@ export function TicketComments({ ticket, initialComments }) {
   const commentRef = useRef(null);
   const supabase = createSupabaseBrowserClient();
 
-  const comments = initialComments || [];
+  const [comments, setComments] = useState(initialComments || []);
+
+  useEffect(() => {
+    const listener = (payload) => {
+      console.log("Realtime event received!", payload);
+      setComments((prevComments) => [...prevComments, payload.new]);
+    };
+    const subscription = supabase
+      .channel("my-channel")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "comments",
+          filter: `ticket=eq.${ticket}`,
+        },
+        listener
+      )
+      .subscribe();
+    return () => subscription.unsubscribe();
+  }, []);
 
   return (
     <footer>
