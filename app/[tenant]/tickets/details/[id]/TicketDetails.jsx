@@ -17,6 +17,7 @@ const TicketDetails = ({
   description,
   tenant,
   assignee,
+  initialComments,
 }) => {
   const supabase = createSupabaseBrowserClient();
   const router = useRouter();
@@ -72,7 +73,7 @@ const TicketDetails = ({
       </header>
       <section>{description}.</section>
 
-      <TicketComments />
+      <TicketComments ticket={id} initialComments={initialComments} />
     </article>
   );
 };

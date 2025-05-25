@@ -1,43 +1,51 @@
 "use client";
 import { useRef } from "react";
-const comments = [
-  {
-    author: "Dave",
-    date: "2027-01-01",
-    content: "This is a comment from Dave",
-  },
-  {
-    author: "Alice",
-    date: "2027-01-02",
-    content: "This is a comment from Alice",
-  },
-];
 
 import classes from "./styles.module.css";
-export function TicketComments() {
+import { createSupabaseBrowserClient } from "../../../../../supabase-utils/browser-client";
+export function TicketComments({ ticket, initialComments }) {
   const commentRef = useRef(null);
+  const supabase = createSupabaseBrowserClient();
+
+  const comments = initialComments || [];
+
   return (
     <footer>
       <h3>Comments</h3>
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          alert("TODO: Add comment");
+          const comment_text = commentRef.current.value.trim();
+
+          console.log(comment_text);
+          if (!comment_text) return alert("Please enter a comment");
+          commentRef.disabled = true;
+          supabase
+            .from("comments")
+            .insert({
+              ticket,
+              comment_text,
+            })
+            .then(() => {
+              commentRef.current.value = "";
+              commentRef.disabled = false;
+            })
+            .catch((error) => {
+              console.error(error);
+            });
         }}
       >
         <textarea ref={commentRef} placeholder="Add a comment" />
         <button type="submit">Add comment</button>
       </form>
 
-      <section>
-        {comments.map((comment) => (
-          <article key={comment.date} className={classes.comment}>
-            <strong>{comment.author} </strong>
-            <time>{comment.date}</time>
-            <p>{comment.content}</p>
-          </article>
-        ))}
-      </section>
+      {comments.map((comment) => (
+        <article key={comment.id} className={classes.comment}>
+          <strong>{comment.author_name} </strong>
+          <time>{new Date(comment.created_at).toLocaleString("en-US")}</time>
+          <p>{comment.comment_text}</p>
+        </article>
+      ))}
       <section>We have {comments.length} comments.</section>
     </footer>
   );
