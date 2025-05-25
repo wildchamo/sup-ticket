@@ -9,13 +9,22 @@ export function TicketComments({ ticket, initialComments }) {
 
   const [comments, setComments] = useState(initialComments || []);
 
+  const deleteComment = async (commentId) => {
+    try {
+      const { error } = await supabase
+        .from("comments")
+        .delete()
+        .eq("id", commentId);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   useEffect(() => {
-    const listener = (payload) => {
-      console.log("Realtime event received!", payload);
-      setComments((prevComments) => [...prevComments, payload.new]);
-    };
-    const subscription = supabase
-      .channel("my-channel")
+    const channel = supabase
+      .channel("comments")
       .on(
         "postgres_changes",
         {
@@ -24,10 +33,26 @@ export function TicketComments({ ticket, initialComments }) {
           table: "comments",
           filter: `ticket=eq.${ticket}`,
         },
-        listener
+        (payload) => {
+          console.log("Realtime event:", payload);
+          if (payload.eventType === "INSERT") {
+            setComments((prev) => [...prev, payload.new]);
+          }
+          if (payload.eventType === "DELETE") {
+            setComments((prev) => prev.filter((c) => c.id !== payload.old.id));
+          }
+          if (payload.eventType === "UPDATE") {
+            setComments((prev) =>
+              prev.map((c) => (c.id === payload.new.id ? payload.new : c))
+            );
+          }
+        }
       )
       .subscribe();
-    return () => subscription.unsubscribe();
+
+    return () => {
+      channel.unsubscribe();
+    };
   }, []);
 
   return (
@@ -65,6 +90,21 @@ export function TicketComments({ ticket, initialComments }) {
           <strong>{comment.author_name} </strong>
           <time>{new Date(comment.created_at).toLocaleString("en-US")}</time>
           <p>{comment.comment_text}</p>
+          <button
+            onClick={() => deleteComment(comment.id)}
+            style={{
+              backgroundColor: "#ff4444",
+              color: "white",
+              padding: "4px 8px",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "0.8rem",
+              marginTop: "8px",
+            }}
+          >
+            Delete Comment
+          </button>
         </article>
       ))}
       <section>We have {comments.length} comments.</section>
