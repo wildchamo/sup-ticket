@@ -48,7 +48,7 @@ export function TicketComments({ ticket, initialComments }) {
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => console.log("connection status", status));
 
     return () => {
       channel.unsubscribe();
