@@ -5,7 +5,11 @@ import classes from "./styles.module.css";
 import { createSupabaseBrowserClient } from "../../../../../supabase-utils/browser-client";
 export function TicketComments({ ticket, initialComments }) {
   const commentRef = useRef(null);
+  const fileInputRef = useRef(null);
+
   const supabase = createSupabaseBrowserClient();
+
+  const [fileList, setFileList] = useState(/** @type {FileList} */ ([]));
 
   const [comments, setComments] = useState(initialComments || []);
 
@@ -82,6 +86,18 @@ export function TicketComments({ ticket, initialComments }) {
         }}
       >
         <textarea ref={commentRef} placeholder="Add a comment" />
+        <label htmlFor="file">
+          <input
+            type="file"
+            id="file"
+            name="file"
+            multiple
+            ref={fileInputRef}
+            onChange={(e) => {
+              setFileList(e.target.files);
+            }}
+          />
+        </label>
         <button type="submit">Add comment</button>
       </form>
 
@@ -90,21 +106,6 @@ export function TicketComments({ ticket, initialComments }) {
           <strong>{comment.author_name} </strong>
           <time>{new Date(comment.created_at).toLocaleString("en-US")}</time>
           <p>{comment.comment_text}</p>
-          <button
-            onClick={() => deleteComment(comment.id)}
-            style={{
-              backgroundColor: "#ff4444",
-              color: "white",
-              padding: "4px 8px",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontSize: "0.8rem",
-              marginTop: "8px",
-            }}
-          >
-            Delete Comment
-          </button>
         </article>
       ))}
       <section>We have {comments.length} comments.</section>
