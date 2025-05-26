@@ -3,7 +3,10 @@ import { useRef, useState, useEffect } from "react";
 
 import classes from "./styles.module.css";
 import { createSupabaseBrowserClient } from "../../../../../supabase-utils/browser-client";
-export function TicketComments({ ticket, initialComments }) {
+
+import { getRandomHexString } from "../../../../../utils/randomString";
+
+export function TicketComments({ ticket, initialComments, tenant }) {
   const commentRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -67,22 +70,62 @@ export function TicketComments({ ticket, initialComments }) {
           event.preventDefault();
           const comment_text = commentRef.current.value.trim();
 
-          console.log(comment_text);
           if (!comment_text) return alert("Please enter a comment");
+
           commentRef.disabled = true;
-          supabase
-            .from("comments")
-            .insert({
-              ticket,
-              comment_text,
-            })
-            .then(() => {
-              commentRef.current.value = "";
-              commentRef.disabled = false;
-            })
-            .catch((error) => {
-              console.error(error);
-            });
+
+          let uploadPromise = Promise.resolve();
+
+          const fileArray = Array.from(fileList);
+
+          if (fileList.length) {
+            uploadPromise = Promise.all(
+              fileArray.map((file) =>
+                supabase.storage
+                  .from("comment-attachments")
+                  .upload(
+                    [tenant, ticket, getRandomHexString(), file.name].join("/"),
+                    file
+                  )
+              )
+            );
+          }
+
+          uploadPromise.then((fileUploads) => {
+            supabase
+              .from("comments")
+              .insert({
+                ticket,
+                comment_text,
+              })
+              .select("*")
+              .single()
+              .then(({ error, data: commentData }) => {
+                commentRef.current.value = "";
+                commentRef.disabled = false;
+                fileInputRef.current.value = "";
+
+                setFileList([]);
+
+                if (error) return alert("Error adding comment");
+
+                if (fileUploads) {
+                  supabase
+                    .from("comment_attachments")
+                    .insert(
+                      fileUploads.map((file) => ({
+                        comment: commentData.id,
+                        file_path: file.data.path,
+                      }))
+                    )
+                    .then();
+                }
+              })
+
+              .catch((error) => {
+                console.error(error);
+              });
+          });
         }}
       >
         <textarea ref={commentRef} placeholder="Add a comment" />

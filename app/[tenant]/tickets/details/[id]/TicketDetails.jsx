@@ -73,7 +73,11 @@ const TicketDetails = ({
       </header>
       <section>{description}.</section>
 
-      <TicketComments ticket={id} initialComments={initialComments} />
+      <TicketComments
+        ticket={id}
+        initialComments={initialComments}
+        tenant={tenant}
+      />
     </article>
   );
 };
