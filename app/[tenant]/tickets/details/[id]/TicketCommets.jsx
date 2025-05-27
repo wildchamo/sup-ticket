@@ -29,6 +29,26 @@ export function TicketComments({ ticket, initialComments, tenant }) {
     }
   };
 
+  const attachmentsListener = (payload) => {
+    const eventType = payload.eventType;
+    if (eventType === "INSERT") {
+      setComments((prevComments) =>
+        prevComments.map((comment) => {
+          if (comment.id === payload.new.comment) {
+            return {
+              ...comment,
+              comment_attachments: [
+                ...(comment.comment_attachments || []),
+                payload.new,
+              ],
+            };
+          }
+          return comment;
+        })
+      );
+    }
+  };
+
   useEffect(() => {
     const channel = supabase
       .channel("comments")
@@ -55,6 +75,16 @@ export function TicketComments({ ticket, initialComments, tenant }) {
           }
         }
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "comment_attachments",
+        },
+        attachmentsListener
+      )
+
       .subscribe((status) => console.log("connection status", status));
 
     return () => {
