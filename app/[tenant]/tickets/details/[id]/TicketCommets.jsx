@@ -62,6 +62,7 @@ export function TicketComments({ ticket, initialComments, tenant }) {
     };
   }, []);
 
+  console.log(comments);
   return (
     <footer>
       <h3>Comments</h3>
@@ -149,6 +150,39 @@ export function TicketComments({ ticket, initialComments, tenant }) {
           <strong>{comment.author_name} </strong>
           <time>{new Date(comment.created_at).toLocaleString("en-US")}</time>
           <p>{comment.comment_text}</p>
+          {comment.comment_attachments?.length > 0 && (
+            <>
+              <small style={{ display: "block" }}>Attachments</small>
+              {comment.comment_attachments.map((attachment) => (
+                <button
+                  key={attachment.id}
+                  onClick={() => {
+                    supabase.storage
+                      .from("comment-attachments")
+                      .createSignedUrl(attachment.file_path, 60, {
+                        download: false,
+                      })
+                      .then(({ data, error }) => {
+                        window.open(data.signedUrl, "_blank");
+                      });
+                  }}
+                  style={{
+                    fontSize: "0.9rem",
+                    display: "inline-block",
+                    width: "auto",
+                    marginRight: "0.5rem",
+                    padding: "0.26em 0.5em",
+                    borderRadius: "4px",
+                    border: 0,
+                    backgroundColor: "rgba(255, 255, 255, 0.15)",
+                    cursor: "pointer",
+                  }}
+                >
+                  {attachment.file_path.split("/").pop()}
+                </button>
+              ))}
+            </>
+          )}
         </article>
       ))}
       <section>We have {comments.length} comments.</section>

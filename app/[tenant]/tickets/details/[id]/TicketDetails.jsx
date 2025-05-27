@@ -22,6 +22,8 @@ const TicketDetails = ({
   const supabase = createSupabaseBrowserClient();
   const router = useRouter();
 
+  console.log(initialComments);
+
   return (
     <article className={classes.ticketDetails}>
       <header>
