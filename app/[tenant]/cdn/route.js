@@ -16,17 +16,20 @@ export async function GET(req) {
   } else {
     const cdnPath = cdnImage.file_path;
 
+    const { data: bucketInfo, error: bucketError } =
+      await supabase.storage.getBucket("comment-attachments");
+
+    console.log(bucketInfo, bucketError);
+
     const { data, error } = await supabase.storage
       .from("comment-attachments")
-      .download(cdnPath, {
+      .download("packt/14/07153ea84f0638/factura1.jpg", {
         transform: {
           width: 100,
           height: 100,
           quality: 80,
         },
       });
-
-    console.log(data, error);
 
     return new Response(data);
   }
