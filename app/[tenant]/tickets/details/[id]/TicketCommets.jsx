@@ -5,6 +5,7 @@ import classes from "./styles.module.css";
 import { createSupabaseBrowserClient } from "../../../../../supabase-utils/browser-client";
 
 import { getRandomHexString } from "../../../../../utils/randomString";
+import { urlPath } from "../../../../../utils/url-helpers";
 
 export function TicketComments({ ticket, initialComments, tenant }) {
   const commentRef = useRef(null);
@@ -191,6 +192,10 @@ export function TicketComments({ ticket, initialComments, tenant }) {
                       .from("comment-attachments")
                       .createSignedUrl(attachment.file_path, 60, {
                         download: false,
+                        transform: {
+                          width: 500,
+                          height: 500,
+                        },
                       })
                       .then(({ data, error }) => {
                         window.open(data.signedUrl, "_blank");
@@ -209,6 +214,16 @@ export function TicketComments({ ticket, initialComments, tenant }) {
                   }}
                 >
                   {attachment.file_path.split("/").pop()}
+
+                  {attachment.file_path.endsWith(".jpg") && (
+                    <img
+                      style={{ marginLeft: "10px" }}
+                      src={urlPath(
+                        `/cdn?image=${attachment.file_path}`,
+                        tenant
+                      )}
+                    />
+                  )}
                 </button>
               ))}
             </>
