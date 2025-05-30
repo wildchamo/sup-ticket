@@ -2,6 +2,7 @@ import Link from "next/link";
 import { urlPath } from "../../../utils/url-helpers";
 import { createSupabaseServerClient } from "../../../supabase-utils/server-client";
 import { TICKET_STATUS } from "../../../utils/constants";
+import { getOpenAIEmbedding } from "../../../utils/openai";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +49,21 @@ export async function TicketList({ tenant, searchParams }) {
     .order("status", { ascending: true })
     .order("created_at", { ascending: false })
     .range(startingPoint, startingPoint + 5);
+
+  const useAiSearch = true;
+
+  if (searchValue && useAiSearch) {
+    const embedding = await getOpenAIEmbedding("Ticket title = " + searchValue);
+    console.log(embedding);
+    ticketsStatement = supabase.rpc("match_tickets", {
+      search_embedding: embedding,
+      match_offset: startingPoint,
+      match_limit: 6,
+    });
+    countStatement = supabase.rpc("match_tickets_count", {
+      search_embedding: embedding,
+    });
+  }
 
   const { count } = await countStatement;
   const { data: tickets, error } = await ticketsStatement;

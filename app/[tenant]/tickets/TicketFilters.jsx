@@ -33,7 +33,7 @@ export function TicketFilters({ tenant }) {
           ref={searchInputRef}
           id="search"
           name="search"
-          placeholder="Search tickets..."
+          placeholder="Search similiar tickets (AI)..."
           required
           style={{ margin: 0, maxWidth: "350px" }}
         />
