@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "reset": "npx supabase stop; docker volume rm $(docker volume ls --format '{{.Name}}' --filter label=com.supabase.cli.project=supabase_book); npx supabase start",
-    "dev": "next dev --turbopack",
+    "dev": "supabase start && next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "supabase stop && supabase start && npm run dev"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",

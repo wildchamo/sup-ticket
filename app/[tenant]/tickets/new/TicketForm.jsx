@@ -1,14 +1,14 @@
 "use client";
-import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useRef } from "react";
 import { urlPath } from "../../../../utils/url-helpers";
 import { AssigneeSelect } from "../../../../components/AssigneeSelect";
+import { createSupabaseBrowserClient } from "../../../../supabase-utils/browser-client";
 
 export default function CreateTicket({ tenant }) {
   const [isLoading, setIsLoading] = useState(false);
-  const supabase = createBrowserClient();
+  const supabase = createSupabaseBrowserClient();
   const router = useRouter();
 
   const [assignee, setAssignee] = useState(null);
